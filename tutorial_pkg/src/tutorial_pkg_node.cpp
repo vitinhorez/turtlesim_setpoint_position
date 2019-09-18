@@ -10,10 +10,8 @@ ros::Subscriber pose_subscriber;
 turtlesim::Pose turtlesim_pose;
 
 
-const double x_min = 0.0;
-const double y_min = 0.0;
-const double x_max = 11.0;
-const double y_max = 11.0;
+double x = 0.0;
+double y = 0.0;
 
 
 
@@ -36,15 +34,18 @@ int main(int argc, char **argv)
 
 	ros::Rate loop(0.5);
 	turtlesim::Pose pose;
-	pose.x=1;
-	pose.y=1;
-	pose.theta=0;
-	moveGoal(pose, 0.01);
 
-	pose.x=6;
-	pose.y=6;
+	cout << "Type your X goal.\n";
+	cin >> x;
+	
+	cout << "Type your Y goal.\n";
+	cin >> y;
+
+
+	pose.x=x;
+	pose.y=y;
 	pose.theta=0;
-	moveGoal(pose, 0.01);
+	moveGoal(pose, 0.1);
 
 
 
@@ -75,19 +76,13 @@ void moveGoal(turtlesim::Pose  goal_pose, double distance_tolerance){
 	ros::Rate loop_rate(100);
 	double E = 0.0;
 	do{
-		/****** Proportional Controller ******/
-		//linear velocity in the x-axis
 		double Kp=1.0;
 		double Ki=0.02;
-		//double v0 = 2.0;
-		//double alpha = 0.5;
 		double e = getDistance(turtlesim_pose.x, turtlesim_pose.y, goal_pose.x, goal_pose.y);
 		double E = E+e;
-		//Kp = v0 * (exp(-alpha)*error*error)/(error*error);
 		vel_msg.linear.x = (Kp*e);
 		vel_msg.linear.y =0;
 		vel_msg.linear.z =0;
-		//angular velocity in the z-axis
 		vel_msg.angular.x = 0;
 		vel_msg.angular.y = 0;
 		vel_msg.angular.z =4*(atan2(goal_pose.y-turtlesim_pose.y, goal_pose.x-turtlesim_pose.x)-turtlesim_pose.theta);
